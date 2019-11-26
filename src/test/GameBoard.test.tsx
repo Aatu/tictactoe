@@ -52,14 +52,11 @@ it("Will fail if trying to do stuff out of bounds", () => {
 });
 
 it("Will return valid positions to place a piece", () => {
-  const board = new GameBoard(3);
+  const board = new GameBoard(5);
 
-  const place = 4;
-  const player = 1;
+  board.placePiece(7, 1);
 
-  board.placePiece(place, player);
-
-  expect(board.getValidPositionsToPlace()).toEqual([0, 1, 2, 3, 5, 6, 7, 8]);
+  expect(board.getValidPositionsToPlace()).toEqual([1,2,3,6,8,11,12,13]);
 });
 
 it("can be won", () => {
@@ -68,6 +65,16 @@ it("can be won", () => {
   board.placePiece(0, 1);
   expect(board.getWinningPlayer()).toBe(null);
   board.placePiece(8, 1);
+
+  expect(board.getWinningPlayer()).toBe(1);
+});
+
+it("can be won horizontally", () => {
+  const board = new GameBoard(3);
+  board.placePiece(4, 1);
+  board.placePiece(3, 1);
+  expect(board.getWinningPlayer()).toBe(null);
+  board.placePiece(5, 1);
 
   expect(board.getWinningPlayer()).toBe(1);
 });

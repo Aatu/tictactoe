@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Formik } from "formik";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { GameService } from "../gameLogic/GameService";
+import { DispatchStore } from "./StoreProvider";
+import { Input } from "./Input";
 
 const Container = styled.div``;
-
-interface Props {
-  gameService: GameService;
-}
 
 interface CreateGameFormValues {
   size: number;
@@ -23,7 +22,19 @@ interface CreateGameFormErrors {
   computer?: string;
 }
 
-export const CreateGame: React.FunctionComponent<Props> = ({ gameService }) => {
+export const CreateGame: React.FunctionComponent<{}> = () => {
+  const gameService = new GameService(useContext(DispatchStore));
+
+  const history = useHistory();
+
+  const handleSubmit = (values: CreateGameFormValues) => {
+    console.log("submit");
+    const game = gameService.createGame(values);
+
+    console.log("game", game);
+    history.push(`/game/${game.id}`);
+  };
+
   const initialValues: CreateGameFormValues = {
     size: 3,
     winLength: 3,
@@ -36,9 +47,7 @@ export const CreateGame: React.FunctionComponent<Props> = ({ gameService }) => {
       <Formik
         initialValues={initialValues}
         validate={validate}
-        onSubmit={(values) => {
-          gameService.createGame(values)
-        }}
+        onSubmit={handleSubmit}
       >
         {({
           values,
@@ -49,46 +58,57 @@ export const CreateGame: React.FunctionComponent<Props> = ({ gameService }) => {
           handleSubmit,
           isSubmitting
         }) => (
-          <form onSubmit={handleSubmit}>
-            <input
-              type="number"
-              name="size"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.size}
-            />
-            {errors.size && touched.size && errors.size}
+          <CreateGameForm onSubmit={handleSubmit}>
+            <Row>
+              <Input
+                label="Game board width"
+                error={errors.size && touched.size && errors.size}
+                type="number"
+                name="size"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.size}
+              />
 
-            <input
-              type="number"
-              name="winLength"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.winLength}
-            />
-            {errors.winLength && touched.winLength && errors.winLength}
+              <Input
+                label="Pieces needed to win"
+                error={
+                  errors.winLength && touched.winLength && errors.winLength
+                }
+                type="number"
+                name="winLength"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.winLength}
+              />
+            </Row>
 
-            <input
-              type="text"
-              name="human"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.human}
-            />
-            {errors.human && touched.human && errors.human}
+            <Row>
+              <Input
+                label="Player character"
+                error={errors.human && touched.human && errors.human}
+                type="text"
+                name="human"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.human}
+              />
 
-            <input
-              type="text"
-              name="computer"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.computer}
-            />
-            {errors.computer && touched.computer && errors.computer}
+              <Input
+                label="Computer character"
+                error={errors.computer && touched.computer && errors.computer}
+                type="text"
+                name="computer"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.computer}
+              />
+            </Row>
+
             <button type="submit" disabled={isSubmitting}>
               Create game
             </button>
-          </form>
+          </CreateGameForm>
         )}
       </Formik>
     </Container>
@@ -98,18 +118,16 @@ export const CreateGame: React.FunctionComponent<Props> = ({ gameService }) => {
 const validate = (values: CreateGameFormValues) => {
   const errors: CreateGameFormErrors = {};
 
-  console.log(values.size, values.size % 1);
-
-  if (values.human.length !== 1) {
-    errors.human = "Must be exactly one character";
+  if (values.human.length < 1 || values.human.length > 2 ) {
+    errors.human = "Must be 1 to 2 charactes";
   }
 
-  if (values.computer.length !== 1) {
-    errors.computer = "Must be exactly one character";
+  if (values.computer.length < 1 || values.computer.length > 2 ) {
+    errors.computer = "Must be 1 to 2 charactes";
   }
 
-  if (values.size < 3 || values.size > 10) {
-    errors.size = "Must be between 3 and 10";
+  if (values.size < 3 || values.size > 11) {
+    errors.size = "Must be between 3 and 11";
   } else if (values.size % 1 !== 0) {
     errors.size = "No decimals! :<";
   }
@@ -121,4 +139,12 @@ const validate = (values: CreateGameFormValues) => {
   }
 
   return errors;
-}
+};
+
+const Row = styled.div`
+  display: flex;
+  width: 700px;
+  justify-content: space-between;
+`;
+
+const CreateGameForm = styled.form``;

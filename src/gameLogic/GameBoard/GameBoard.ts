@@ -11,10 +11,14 @@ export class GameBoard implements IGameBoard {
   positions: Array<number>;
   winLength: number;
 
-  constructor(size: number, winLength: number = 0) {
+  constructor(size: number, winLength: number = 3) {
     this.size = size;
     this.positions = Array(size * size).fill(0);
     this.winLength = winLength || size;
+  }
+
+  getPlayerIdAt(position: number) {
+    return this.positions[position];
   }
 
   getPositions() {
@@ -37,12 +41,10 @@ export class GameBoard implements IGameBoard {
     return GameBoardAnalyzer.getWinningPlayer(this);
   }
 
-  deserialize(
-    data: IGameBoard = { size: 3, positions: Array(9).fill(0), winLength: 3 }
-  ) {
-    this.size = data.size;
-    this.positions = data.positions;
-    this.winLength = data.winLength;
+  deserialize({ size, positions, winLength }: IGameBoard) {
+    this.size = size;
+    this.positions = positions;
+    this.winLength = winLength;
   }
 
   serialize(): IGameBoard {
@@ -53,37 +55,47 @@ export class GameBoard implements IGameBoard {
     };
   }
 
-  placePiece(place: number, player: number) {
-    failIfOutOfBounds(place, this.positions.length);
-    if (!this.canPlace(place)) {
+  placePiece(position: number, player: number) {
+    failIfOutOfBounds(position, this.positions.length);
+    if (!this.canPlace(position)) {
       throw new Error(
-        `Tried to take place '${place}' on game board, but it is taken`
+        `Tried to take place '${position}' on game board, but it is taken`
       );
     }
 
-    this.positions[place] = player;
+    this.positions[position] = player;
   }
 
-  canPlace(place: number): boolean {
-    failIfOutOfBounds(place, this.positions.length);
-    if (this.isTaken(place)) {
+  isPartOfWinningRow(position: number): boolean {
+    const winnnigRow = GameBoardAnalyzer.getWinningRow(this);
+
+    return winnnigRow.includes(position);
+  }
+
+  canPlace(position: number): boolean {
+    failIfOutOfBounds(position, this.positions.length);
+    if (this.isTaken(position)) {
       return false;
     }
 
-    return true;
+    return GameBoardAnalyzer.isValidPositionToPlace(this, position);
   }
 
-  isTaken(place: number): boolean {
-    return this.positions[place] !== 0;
+  isTaken(position: number): boolean {
+    return this.positions[position] !== 0;
   }
 
-  isTakenBy(place: number, player: number): boolean {
-    return this.positions[place] === player;
+  isTakenBy(position: number, player: number): boolean {
+    return this.positions[position] === player;
+  }
+  
+  isFull(){
+    return this.positions.every(position => position !== 0);
   }
 
-  getPlayer(place: number): number {
-    failIfOutOfBounds(place, this.positions.length);
-    return this.positions[place];
+  getPlayer(position: number): number {
+    failIfOutOfBounds(position, this.positions.length);
+    return this.positions[position];
   }
 }
 
