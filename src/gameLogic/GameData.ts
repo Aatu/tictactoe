@@ -43,7 +43,7 @@ export class GameData {
     if (this.board.isFull()) {
       return;
     }
-    
+
     this.activePlayerId++;
 
     if (this.activePlayerId > this.players.length) {
@@ -56,7 +56,6 @@ export class GameData {
   }
 
   playTurn(position: number) {
-    console.log("PLAY TURN, player:", this.activePlayerId, "position:", position)
     this.board.placePiece(position, this.activePlayerId);
 
     this.nextPlayer();

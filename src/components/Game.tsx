@@ -3,6 +3,7 @@ import { GameService } from "../gameLogic/GameService";
 import { useParams, Redirect, Link } from "react-router-dom";
 import { StateStore, DispatchStore } from "./StoreProvider";
 import styled, { css } from "styled-components";
+import { motion } from "framer-motion";
 
 export const Game: React.FunctionComponent<{}> = () => {
   const { gameId } = useParams();
@@ -19,7 +20,7 @@ export const Game: React.FunctionComponent<{}> = () => {
 
       gameService.playTurn(gameId, position);
     },
-    [gameId]
+    [gameId, gameService]
   );
 
   if (!game) {
@@ -31,7 +32,19 @@ export const Game: React.FunctionComponent<{}> = () => {
   const draw = !winner && board.isFull();
 
   return (
-    <Container>
+    <Container
+      initial="exit"
+      animate="enter"
+      exit="exit"
+      variants={{
+        exit: {
+          opacity: 0
+        },
+        enter: {
+          opacity: 1
+        }
+      }}
+    >
       <Header>
         <div>
           {draw && <b>DRAW!</b>}
@@ -66,7 +79,7 @@ export const Game: React.FunctionComponent<{}> = () => {
 
 const gameBoxSize = 32;
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   justify-content: center;

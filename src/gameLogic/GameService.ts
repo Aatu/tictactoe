@@ -24,7 +24,7 @@ export class GameService {
     const gameData = new GameData(uuidv4(), size, winLength)
       .addPlayer("Player", human, false)
       .addPlayer("Computer", computer, true);
-      
+
     this.saveGame(gameData);
     this.loadGames();
     return gameData;
