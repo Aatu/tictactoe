@@ -10,8 +10,6 @@ export class RandomAiStrategy implements IAiStrategy {
     const board = game.getBoard();
     const validPositions = board.getValidPositionsToPlace();
 
-    console.log("AI plays", validPositions);
-
     const position = validPositions[Math.floor(Math.random() * validPositions.length)];
 
     game.playTurn(position);

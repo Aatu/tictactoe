@@ -28,10 +28,7 @@ export const CreateGame: React.FunctionComponent<{}> = () => {
   const history = useHistory();
 
   const handleSubmit = (values: CreateGameFormValues) => {
-    console.log("submit");
     const game = gameService.createGame(values);
-
-    console.log("game", game);
     history.push(`/game/${game.id}`);
   };
 
