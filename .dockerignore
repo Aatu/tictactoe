@@ -1,0 +1,4 @@
+.git
+yarn-error.log
+node_modules
+build
